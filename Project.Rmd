@@ -90,10 +90,16 @@ Clean the validate and Test datasets in the same way:
 
 ```{r}
 clean1 <- colnames(TrainingSub)
-ValidatingSub <- ValidatingSub[clean1,]
+clean2 <- colnames(TrainingSub[, -59]) 
+ValidatingSub <- ValidatingSub[clean1]
+testing <- testing[clean2]
 
-clean2 <- colnames(TrainingSub[, -58]) 
-testing <- testing[clean2,]
+
+rm(Temp)
+rm(clean2)
+rm(clean1)
+rm(myDataNZV)
+rm(NonZeroVariables)
 ```
 
 
@@ -107,7 +113,7 @@ for (i in 1:length(testing) ) {
     }      
 }
 
-testing <- rbind(TrainingSub[2, -58] , testing)
+testing <- rbind(TrainingSub[2, -59] , testing)
 testing <- testing[-1,]
 ```
 
@@ -130,18 +136,18 @@ fancyRpartPlot(modFit1)
 predict results using Validating Data Set first:
 
 ```{r}
-predictionsA1 <- predict(modFit1, ValidatingSub, type = "class")
+prediction1 <- predict(modFit1, ValidatingSub, type = "class")
 
-confusionMatrix(predictionsA1, ValidatingSub$classe)
+confusionMatrix(prediction1, ValidatingSub$classe)
 ```
 
 Fit another model using Random Forests and predict errors again to compare with model one.
 ```{r}
-modFitB1 <- randomForest(classe ~. , data=TrainingSub)
+modFit2 <- randomForest(classe ~. , data=TrainingSub)
 
-predictionsB1 <- predict(modFitB1, ValidatingSub, type = "class")
+predictions2 <- predict(modFit2, ValidatingSub, type = "class")
 
-confusionMatrix(predictionsB1, ValidatingSub$classe)
+confusionMatrix(predictions2, ValidatingSub$classe)
 ```
 
 
@@ -152,8 +158,8 @@ Random Forests accuracy is higher than Tree model
 
 Using the Testing data set we can estimate the out of sample error
 ```{r}
-predictionsB2 <- predict(modFitB1, testing, type = "class")
-predictionsB2
+predictions3 <- predict(modFit2, testing, type = "class")
+predictions3
 ```
 
 
